@@ -153,6 +153,41 @@ export function getContacts(): Contact[] {
 export function setContacts(contacts: Contact[]) {
   setItem("contacts", contacts);
 }
+export function upsertContact({
+  name,
+  email,
+  company,
+  pipeline,
+}: {
+  name: string;
+  email?: string;
+  company?: string;
+  pipeline: string;
+}) {
+  if (!name.trim()) return;
+  const contacts = getContacts();
+  // Find existing by name (case-insensitive)
+  const existing = contacts.find(
+    (c) => c.name.toLowerCase() === name.toLowerCase()
+  );
+  if (existing) {
+    if (!existing.pipelines.includes(pipeline)) {
+      existing.pipelines.push(pipeline);
+    }
+    if (email && !existing.email) existing.email = email;
+    if (company && !existing.company) existing.company = company;
+    setContacts(contacts);
+  } else {
+    contacts.push({
+      id: crypto.randomUUID(),
+      name: name.trim(),
+      email: email || "",
+      company: company || "",
+      pipelines: [pipeline],
+    });
+    setContacts(contacts);
+  }
+}
 
 // Computed metrics
 export function computeConsultingMetrics(deals: ConsultingDeal[]) {

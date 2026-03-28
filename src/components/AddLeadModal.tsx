@@ -5,6 +5,7 @@ import {
   addConsultingDeal,
   addSpeakingDeal,
   addDigitalLead,
+  upsertContact,
   CONSULTING_STAGES,
   CONSULTING_SERVICES,
   CONSULTING_SOURCES,
@@ -128,6 +129,11 @@ export default function AddLeadModal({ onClose }: { onClose: () => void }) {
           clientType: fields.clientType || "Brand-side",
           stage: fields.stage || "Lead Identified",
         });
+        upsertContact({
+          name: fields.contact || fields.company || "",
+          company: fields.company || "",
+          pipeline: "Consulting",
+        });
       } else if (parsed.pipeline === "speaking") {
         addSpeakingDeal({
           event: fields.event || "",
@@ -139,6 +145,11 @@ export default function AddLeadModal({ onClose }: { onClose: () => void }) {
           leadCapture: fields.leadCapture === "true",
           stage: fields.stage || "Inquiry",
         });
+        upsertContact({
+          name: fields.event || "",
+          company: fields.location || "",
+          pipeline: "Speaking",
+        });
       } else if (parsed.pipeline === "digital") {
         addDigitalLead({
           name: fields.name || "",
@@ -146,6 +157,11 @@ export default function AddLeadModal({ onClose }: { onClose: () => void }) {
           funnelStage: fields.funnelStage || "Lead Magnet",
           source: fields.source || "Direct",
           revenue: 0,
+        });
+        upsertContact({
+          name: fields.name || "",
+          email: fields.email || "",
+          pipeline: "Digital",
         });
       }
       setState("success");
